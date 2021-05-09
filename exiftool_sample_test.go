@@ -22,7 +22,7 @@ func ExampleExiftool() {
 			continue
 		}
 
-		for k, v := range fileInfo.Fields {
+		for k, v := range fileInfo.Groups["fields"] {
 			fmt.Printf("[%v] %v\n", k, v)
 		}
 	}

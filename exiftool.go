@@ -16,7 +16,7 @@ import (
 var binary = "exiftool"
 var executeArg = "-execute"
 var initArgs = []string{"-stay_open", "True", "-@", "-", "-common_args"}
-var extractArgs = []string{"-j"}
+var extractArgs = []string{"-j", "-g"}
 var closeArgs = []string{"-stay_open", "False", executeArg}
 var readyTokenLen = len(readyToken)
 
@@ -138,13 +138,20 @@ func (e *Exiftool) ExtractMetadata(files ...string) []FileMetadata {
 			continue
 		}
 
-		var m []map[string]interface{}
-		if err := json.Unmarshal(e.scanMergedOut.Bytes(), &m); err != nil {
+		var grps []map[string]json.RawMessage
+		if err := json.Unmarshal(e.scanMergedOut.Bytes(), &grps); err != nil {
 			fms[i].Err = fmt.Errorf("error during unmarshaling (%v): %w)", string(e.scanMergedOut.Bytes()), err)
 			continue
 		}
-
-		fms[i].Fields = m[0]
+		fms[i].Groups = map[string]FileMetadataValues{}
+		for n, gf := range grps[0] {
+			var gv FileMetadataValues
+			if err := json.Unmarshal(gf, &gv); err != nil {
+				//fms[i].Err = fmt.Errorf("unmarshal(%v) failed: %w", string(gf), err)
+				continue
+			}
+			fms[i].Groups[n] = gv
+		}
 	}
 
 	return fms

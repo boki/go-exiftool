@@ -9,16 +9,18 @@ import (
 
 func getExpectedFileMetadata() FileMetadata {
 	return FileMetadata{
-		Fields: map[string]interface{}{
-			"stringMono":  "stringMonoValue",
-			"float":       float64(3.14),
-			"integer":     int64(42),
-			"unsupported": int32(22),
-			"strFloat":    "6.28",
-			"strInt":      "84",
-			"int32":       int32(32),
-			"float32":     float32(32.32),
-			"array":       []interface{}{"str", float64(64.64), float32(32.32), int64(64), true},
+		Groups: map[string]FileMetadataValues{
+			"fields": {
+				{"stringMono", "stringMonoValue"},
+				{"float", float64(3.14)},
+				{"integer", int64(42)},
+				{"unsupported", int32(22)},
+				{"strFloat", "6.28"},
+				{"strInt", "84"},
+				{"int32", int32(32)},
+				{"float32", float32(32.32)},
+				{"array", []interface{}{"str", float64(64.64), float32(32.32), int64(64), true}},
+			},
 		},
 	}
 }
@@ -41,7 +43,7 @@ func TestGetInt(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc // Pin variable
 		t.Run(tc.inKey, func(t *testing.T) {
-			v, err := fm.GetInt(tc.inKey)
+			v, err := fm.Groups["fields"].GetInt(tc.inKey)
 			if tc.expIsError {
 				assert.NotNil(t, err)
 				if tc.expError != nil {
@@ -74,7 +76,7 @@ func TestGetFloat(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc // Pin variable
 		t.Run(tc.inKey, func(t *testing.T) {
-			v, err := fm.GetFloat(tc.inKey)
+			v, err := fm.Groups["fields"].GetFloat(tc.inKey)
 			if tc.expIsError {
 				assert.NotNil(t, err)
 				if tc.expError != nil {
@@ -106,7 +108,7 @@ func TestGetString(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc // Pin variable
 		t.Run(tc.inKey, func(t *testing.T) {
-			v, err := fm.GetString(tc.inKey)
+			v, err := fm.Groups["fields"].GetString(tc.inKey)
 			if tc.expIsError {
 				assert.NotNil(t, err)
 				if tc.expError != nil {
@@ -139,7 +141,7 @@ func TestGetStrings(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc // Pin variable
 		t.Run(tc.inKey, func(t *testing.T) {
-			v, err := fm.GetStrings(tc.inKey)
+			v, err := fm.Groups["fields"].GetStrings(tc.inKey)
 			if tc.expIsError {
 				assert.NotNil(t, err)
 				if tc.expError != nil {
